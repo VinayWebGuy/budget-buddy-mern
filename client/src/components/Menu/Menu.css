@@ -1,0 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+.menu {
+  margin-top: 20px;
+  position: -webkit-sticky;
+  position: sticky;
+  min-height: calc(100vh - 80px);
+}
+.menu .listItem {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+  border-radius: 8px;
+  transition: 0.3s;
+}
+.menu .listItem:hover {
+  background-color: #eee;
+}
+.menu .listItem img {
+  width: 25px;
+  height: 25px;
+}
+.menu .listItem.version {
+  position: absolute;
+  bottom: 0px;
+  opacity: 0.7;
+}
+.menu > .active {
+  background-color: #eee;
+}/*# sourceMappingURL=Menu.css.map */

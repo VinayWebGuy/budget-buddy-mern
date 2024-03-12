@@ -1,0 +1,41 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+.refer {
+  margin-top: 20px;
+  position: relative;
+}
+.refer .refer-link {
+  font-family: "Josefin Sans";
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  background-color: #eee;
+  padding: 10px;
+  border-radius: 8px;
+}
+.refer .refer-link .copyIcon {
+  opacity: 0;
+  transition: opacity 0.3s;
+  cursor: pointer;
+  z-index: 9;
+}
+.refer .refer-link:hover .copyIcon {
+  opacity: 1;
+}
+.refer .copied {
+  margin-top: 5px;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  text-align: right;
+  position: absolute;
+  right: 20px;
+}
+.refer .social-share {
+  margin-top: 20px;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.refer .social-share > * {
+  font-size: 1.3rem;
+  cursor: pointer;
+}/*# sourceMappingURL=Refer.css.map */

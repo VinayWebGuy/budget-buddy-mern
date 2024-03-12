@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap");
+.dashboard .boxes {
+  margin-top: 20px;
+  display: grid;
+  gap: 40px;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(150px, auto);
+}
+.dashboard .box {
+  padding: 20px;
+  border-radius: 10px;
+  background: #fff;
+  border: 1px solid #fff;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+.dashboard .box .counter {
+  font-size: 2.7rem;
+  font-weight: 600;
+  margin-bottom: 13px;
+  font-family: "Josefin Sans";
+}/*# sourceMappingURL=Dashboard.css.map */

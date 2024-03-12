@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "./Income.scss";
 import Modal from "../../components/Modal/Modal";
 import { categories, paymentMethods } from "../../data";
+import { income } from "../../income";
 
 const Income = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -18,7 +19,30 @@ const Income = () => {
           Add
         </button>
       </div>
-
+      <div className="table">
+        <table>
+          <thead>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Remarks</th>
+          </thead>
+          <tbody>
+            {income.map((inc) => (
+              <>
+                <tr>
+                  <td>{inc.id}</td>
+                  <td>{inc.date}</td>
+                  <td>{inc.amount}</td>
+                  <td>{inc.category}</td>
+                  <td>{inc.remarks}</td>
+                </tr>
+              </>
+            ))}
+          </tbody>
+        </table>
+      </div>
       {openModal && (
         <Modal
           heading="Add Income"

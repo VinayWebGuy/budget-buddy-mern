@@ -1,0 +1,29 @@
+.modal {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4588235294);
+  z-index: 999;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.modal .modal-popup {
+  width: 400px;
+  min-height: 200px;
+  background-color: #fff;
+  padding: 15px 20px;
+  border-radius: 10px;
+  position: relative;
+}
+.modal .modal-popup > div {
+  margin: 20px 0;
+}
+.modal .modal-popup .close-modal {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  color: #f00;
+  cursor: pointer;
+}/*# sourceMappingURL=Modal.css.map */
