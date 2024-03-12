@@ -1,0 +1,103 @@
+@import "./../../styles/variable.scss";
+.formGroup {
+  width: 100%;
+  border: 1px solid #000;
+  border-radius: 7px;
+  padding: 2px 5px;
+  label {
+    padding: 0 8px;
+    font-family: $headingFont !important;
+  }
+  input,
+  select,
+  textarea {
+    font-family: $headingFont;
+    display: block;
+    padding: 2px 12px;
+    width: 100%;
+    margin-top: 8px;
+    font-size: 1rem;
+    outline: none;
+    border: 1px solid #000;
+    border: none;
+    font-weight: 500;
+  }
+  textarea {
+    resize: none;
+  }
+}
+.checkboxGroup {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  margin-right: 50px;
+
+  > label {
+    user-select: none;
+    font-family: $headingFont;
+    cursor: pointer;
+  }
+  > input {
+    position: relative;
+    visibility: hidden;
+
+    & + span {
+      position: absolute;
+      width: 40px;
+      height: 20px;
+      border-radius: 20px;
+      border: 1px solid #000;
+      right: -20px;
+
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    & + span::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      background-color: gray;
+      border-radius: 50%;
+      transition: left 0.3s;
+    }
+    &:checked + span::after {
+      left: calc(100% - 20px);
+      background-color: $color1;
+    }
+  }
+}
+
+.fileGroup {
+  width: 100%;
+  border: 1px solid #000;
+  border-radius: 7px;
+  padding: 2px 5px;
+  label {
+    padding: 0 8px;
+    font-family: $headingFont !important;
+    display: block;
+  }
+  input {
+    visibility: hidden;
+  }
+  .uploadBtn {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    cursor: pointer;
+    font-family: $headingFont;
+    margin-top: -15px;
+    img {
+      width: 30px;
+      height: 30px;
+    }
+    .resultFile {
+      color: $color1;
+    }
+  }
+}

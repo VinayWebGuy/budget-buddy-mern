@@ -1,0 +1,33 @@
+@import "./../../styles/variable.scss";
+
+.menu {
+  margin-top: 20px;
+  position: sticky;
+  min-height: calc(100vh - 80px);
+  .listItem {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    transition: 0.3s;
+
+    &:hover {
+      background-color: $bgColor;
+    }
+
+    img {
+      width: 25px;
+      height: 25px;
+    }
+    &.version {
+      position: absolute;
+      bottom: 0px;
+      opacity: 0.7;
+    }
+  }
+  > .active {
+    background-color: $bgColor;
+  }
+}
