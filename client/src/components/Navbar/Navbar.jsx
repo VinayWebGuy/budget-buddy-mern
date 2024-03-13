@@ -1,22 +1,73 @@
-import React from "react";
-import "./Navbar.scss";
-import { Link } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
 
-const Navbar = () => {
+import { IoNotificationsSharp } from "react-icons/io5";
+import "./Navbar.scss";
+
+const Navbar = (props) => {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationsRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationsRef.current &&
+        !notificationsRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <div className="navbar">
       <div className="logo">Budget Buddy</div>
+      <img
+        className="menu-icon"
+        onClick={props.handleToggle}
+        src="/menu.svg"
+        alt=""
+      />
       <div className="icons">
-        <Link to="">
-          <img src="/settings.svg" alt="" />
-        </Link>
-        <Link to="">
-          <img src="/notifications.svg" alt="" />
-        </Link>
-        <Link to="" className="user-icon">
+        <span ref={notificationsRef}>
+          <img
+            onClick={() => setShowNotifications(!showNotifications)}
+            src="/notifications.svg"
+            alt=""
+          />
+          {showNotifications && (
+            <div className="notification-popup">
+              <p>All Notifications</p>
+              <div className="notifications-list">
+                <p>
+                  <IoNotificationsSharp />{" "}
+                  <span>Income Added Successfully.</span>
+                </p>
+                <p>
+                  <IoNotificationsSharp />{" "}
+                  <span>Expense Added Successfully.</span>
+                </p>
+                <p>
+                  <IoNotificationsSharp />{" "}
+                  <span>Expense Added Successfully.</span>
+                </p>
+                <p>
+                  <IoNotificationsSharp /> <span>You consumed 50% budget.</span>
+                </p>
+              </div>
+              <div className="buttons center">
+                <button className="btn sm">View All</button>
+              </div>
+            </div>
+          )}
+        </span>
+        <span className="user-icon">
           <img src="/profile.svg" alt="" />
           <span>Vinay Munjal</span>
-        </Link>
+        </span>
       </div>
     </div>
   );

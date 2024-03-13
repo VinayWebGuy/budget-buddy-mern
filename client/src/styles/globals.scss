@@ -20,7 +20,6 @@ a {
     display: flex;
 
     .menuContainer {
-      width: 250px;
       background-color: #fff;
       min-height: 300px;
       padding: 0 20px;
@@ -110,12 +109,17 @@ a {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  .buttons {
+    gap: 20px;
+  }
 }
 .table {
   border: 2px solid #ccc;
   width: 100%;
   margin-top: 20px;
   font-family: $headingFont;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .table table {
@@ -141,6 +145,47 @@ a {
     }
     td {
       padding: 15px;
+    }
+  }
+}
+.search-table {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+
+  input,
+  select {
+    padding: 10px;
+    font-size: 1rem;
+    width: 300px;
+    border-radius: 5px;
+    outline: none;
+    border: 1px solid #ccc;
+    font-family: $headingFont;
+  }
+}
+.pagination {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+  justify-content: center;
+  margin-top: 10px;
+
+  li {
+    button {
+      padding: 10px;
+      background-color: transparent;
+      border: 2px solid $color1;
+      border-radius: 5px;
+      outline: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      font-family: $headingFont;
+
+      &.active {
+        background-color: $color1;
+        color: #fff;
+      }
     }
   }
 }

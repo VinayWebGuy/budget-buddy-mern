@@ -1,3 +1,34 @@
+@import "./../../styles/variable.scss";
 .chart {
   margin-top: 20px;
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+
+    > select {
+      padding: 10px;
+      font-size: 1rem;
+      width: 300px;
+      border-radius: 5px;
+      outline: none;
+      border: 1px solid #ccc;
+      font-family: $headingFont;
+    }
+  }
+  .all-charts {
+    margin-top: 20px;
+    display: flex;
+    gap: 50px;
+    .singleChart {
+      width: 50%;
+      height: 300px;
+      padding: 20px 30px;
+      border-radius: 10px;
+      h3 {
+        text-align: center;
+        font-family: $smartFont;
+        color: #333;
+      }
+    }
+  }
 }

@@ -1,13 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Budget.scss";
 import Modal from "../../components/Modal/Modal";
 
 const Budget = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [consumedWidth, setConsumedWidth] = useState(0);
 
   const closeModal = () => {
     setOpenModal(false);
   };
+
+  const totalBudget = 31000;
+  const consumedBudget = 21000;
+
+  useEffect(() => {
+    // Calculate the consumed budget percentage
+    const consumedPercentage = (consumedBudget / totalBudget) * 100;
+    setConsumedWidth(consumedPercentage);
+  }, [totalBudget, consumedBudget]);
+
   return (
     <div className="budget box">
       <div className="table-header">
@@ -15,6 +26,14 @@ const Budget = () => {
         <button className="btn" onClick={() => setOpenModal(true)}>
           Manage Budget
         </button>
+      </div>
+      <div className="budget-bar">
+        <div className="overall-budget">
+          <div
+            className="consumed-budget"
+            style={{ width: `${consumedWidth}%` }}
+          ></div>
+        </div>
       </div>
 
       {openModal && (

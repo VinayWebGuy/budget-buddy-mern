@@ -9,16 +9,21 @@ import Expense from "./pages/Expense/Expense";
 import Income from "./pages/Income/Income";
 import Chart from "./pages/Chart/Chart";
 import Budget from "./pages/Budget/Budget";
-import Reports from "./pages/Reports/Reports";
 import Refer from "./pages/Refer/Refer";
+import { useState } from "react";
 
 function App() {
+  const handleToggle = () => {
+    setMenuWidth(menuWidth === "250px" ? "85px" : "250px");
+  };
+
+  const [menuWidth, setMenuWidth] = useState("250");
   const Layout = () => {
     return (
       <div className="main">
-        <Navbar />
+        <Navbar handleToggle={handleToggle} />
         <div className="container">
-          <div className="menuContainer">
+          <div className="menuContainer" style={{ width: menuWidth }}>
             <Menu />
           </div>
           <div className="contentContainer">
@@ -53,10 +58,6 @@ function App() {
         {
           path: "/budget",
           element: <Budget />,
-        },
-        {
-          path: "/reports",
-          element: <Reports />,
         },
         {
           path: "/refer",

@@ -9,6 +9,7 @@ const Menu = () => {
     <div className="menu">
       {menuItems.map((item) => (
         <Link
+          title={item.title}
           to={item.url}
           className={`listItem ${
             location.pathname === item.url ? "active" : ""

@@ -31,12 +31,6 @@ export const menuItems = [
     },
     {
         id: 6,
-        title: "Reports",
-        url: "/reports",
-        icon: "/reports.svg",
-    },
-    {
-        id: 7,
         title: "Refer",
         url: "/refer",
         icon: "/refer.svg",
