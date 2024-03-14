@@ -1,20 +1,110 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Income.scss";
 import Modal from "../../components/Modal/Modal";
-import { categories, paymentMethods } from "../../data";
-import { income } from "../../income";
+import { BASE_URL, categories, paymentMethods } from "../../data";
 import { CSVLink } from "react-csv";
+import Loading from "../../components/Loading/Loading";
 
 const Income = () => {
   const [openModal, setOpenModal] = useState(false);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
+  const [income, setIncome] = useState([]);
+  // Input change
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState("");
+  const [method, setMethod] = useState("");
+  const [category, setCategory] = useState("");
+  const [remarks, setRemarks] = useState("");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case "category":
+        setCategory(value);
+        break;
+      case "payment_method":
+        setMethod(value);
+        break;
+      case "date":
+        setDate(value);
+        break;
+      case "amount":
+        setAmount(value);
+        break;
+      case "remarks":
+        setRemarks(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const income = {
+      amount,
+      date,
+      payment_method: method,
+      category,
+      remarks,
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/add-income`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(income),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save income");
+      }
+
+      const data = await response.json();
+
+      console.log("Income saved successfully:", data);
+      setLoading(false);
+      setOpenModal(false);
+      setAmount("");
+      setDate("");
+      setCategory("");
+      setRemarks("");
+      fetchIncome();
+    } catch (error) {
+      console.error("Error saving income:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    const fetchIncome = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/all-income`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch income: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setIncome(data.income);
+      } catch (error) {
+        console.error("Error fetching income:", error.message);
+      }
+    };
+
+    fetchIncome();
+  }, []);
 
   const closeModal = () => {
     setOpenModal(false);
   };
-
   const filteredIncome = income.filter((inc) =>
     Object.values(inc).some(
       (value) =>
@@ -22,15 +112,13 @@ const Income = () => {
         value.toLowerCase().includes(search.toLowerCase())
     )
   );
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredIncome.slice(indexOfFirstItem, indexOfLastItem);
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   return (
     <div className="box income">
+      {loading && <Loading />}
       <div className="table-header">
         <h2 className="pageHeading">Income</h2>
         <div className="buttons">
@@ -59,7 +147,6 @@ const Income = () => {
           <option value="50">50 item/page</option>
           <option value={income.length}>All</option>
         </select>
-
         <input
           type="text"
           placeholder="Search here"
@@ -79,15 +166,23 @@ const Income = () => {
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((inc) => (
-              <tr key={inc.id}>
-                <td>{inc.id}</td>
-                <td>{inc.date}</td>
-                <td>{inc.amount}</td>
-                <td>{inc.category}</td>
-                <td>{inc.remarks}</td>
+            {currentItems.length > 0 ? (
+              currentItems.map((inc) => (
+                <tr key={inc._id}>
+                  <td>{inc._id}</td>
+                  <td>{new Date(inc.date).toISOString().split("T")[0]}</td>
+                  <td>{inc.amount}</td>
+                  <td>{inc.category}</td>
+                  <td>{inc.payment_method}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" align="center">
+                  No data found
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -118,6 +213,9 @@ const Income = () => {
               id: "category",
               initialOption: "Choose a category",
               options: categories,
+              onChange: handleInputChange,
+              value: category,
+              required: true,
             },
             {
               title: "Payment Method",
@@ -125,6 +223,9 @@ const Income = () => {
               id: "payment_method",
               initialOption: "Choose a payment method",
               options: paymentMethods,
+              onChange: handleInputChange,
+              value: method,
+              required: true,
             },
           ]}
           inputs={[
@@ -133,26 +234,34 @@ const Income = () => {
               title: "Date",
               id: "date",
               type: "date",
+              value: date,
+              onChange: handleInputChange,
+              required: true,
             },
             {
               name: "amount",
               title: "Amount",
               id: "amount",
               type: "text",
+              value: amount,
+              onChange: handleInputChange,
+              required: true,
             },
             {
               name: "remarks",
               title: "Remarks",
               id: "remarks",
               type: "text",
+              value: remarks,
+              onChange: handleInputChange,
             },
           ]}
           buttonText="Add"
           closeModal={closeModal}
+          onSubmit={submitForm}
         />
       )}
     </div>
   );
 };
-
 export default Income;

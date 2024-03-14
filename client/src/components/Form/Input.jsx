@@ -10,6 +10,7 @@ const Input = ({
   value = "",
   placeholder = "",
   onChange = () => {},
+  required = false,
 }) => {
   return (
     <div className={className}>
@@ -19,7 +20,9 @@ const Input = ({
         name={name}
         id={id}
         placeholder={placeholder}
-        onChange={onChange}
+        onChange={onChange} // Use the provided onChange handler
+        value={value}
+        required={required}
       />
       {type === "checkbox" ? <span></span> : ""}
     </div>

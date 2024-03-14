@@ -1,36 +1,122 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Expense.scss";
 import Modal from "../../components/Modal/Modal";
-import { categories, paymentMethods } from "../../data";
-import { expense } from "../../expense";
+import { BASE_URL, categories, paymentMethods } from "../../data";
 import { CSVLink } from "react-csv";
+import Loading from "../../components/Loading/Loading";
 
 const Expense = () => {
   const [openModal, setOpenModal] = useState(false);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [loading, setLoading] = useState(false);
+  const [expense, setExpense] = useState([]);
+  // Input change
+  const [amount, setAmount] = useState("");
+  const [date, setDate] = useState("");
+  const [method, setMethod] = useState("");
+  const [category, setCategory] = useState("");
+  const [remarks, setRemarks] = useState("");
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    switch (name) {
+      case "category":
+        setCategory(value);
+        break;
+      case "payment_method":
+        setMethod(value);
+        break;
+      case "date":
+        setDate(value);
+        break;
+      case "amount":
+        setAmount(value);
+        break;
+      case "remarks":
+        setRemarks(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const submitForm = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const income = {
+      amount,
+      date,
+      payment_method: method,
+      category,
+      remarks,
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/add-expense`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(income),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save income");
+      }
+
+      const data = await response.json();
+      console.log("Expense saved successfully:", data);
+      setLoading(false);
+      setOpenModal(false);
+      setAmount("");
+      setDate("");
+      setCategory("");
+      setRemarks("");
+    } catch (error) {
+      console.error("Error saving expense:", error.message);
+    }
+  };
+
+  useEffect(() => {
+    const fetchExpense = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/all-expense`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch expense: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setExpense(data.expense);
+      } catch (error) {
+        console.error("Error fetching expese:", error.message);
+      }
+    };
+
+    fetchExpense();
+  }, []);
 
   const closeModal = () => {
     setOpenModal(false);
   };
-
-  const filteredExpense = expense.filter((inc) =>
-    Object.values(inc).some(
+  const filteredExpense = expense.filter((exp) =>
+    Object.values(exp).some(
       (value) =>
         typeof value === "string" &&
         value.toLowerCase().includes(search.toLowerCase())
     )
   );
-
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredExpense.slice(indexOfFirstItem, indexOfLastItem);
-
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
   return (
     <div className="box expense">
+      {loading && <Loading />}
       <div className="table-header">
         <h2 className="pageHeading">Expense</h2>
         <div className="buttons">
@@ -74,19 +160,27 @@ const Expense = () => {
               <th>Date</th>
               <th>Amount</th>
               <th>Category</th>
-              <th>Remarks</th>
+              <th>Method</th>
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((inc) => (
-              <tr key={inc.id}>
-                <td>{inc.id}</td>
-                <td>{inc.date}</td>
-                <td>{inc.amount}</td>
-                <td>{inc.category}</td>
-                <td>{inc.remarks}</td>
+            {currentItems.length > 0 ? (
+              currentItems.map((exp) => (
+                <tr key={exp._id}>
+                  <td>{exp._id}</td>
+                  <td>{new Date(exp.date).toISOString().split("T")[0]}</td>
+                  <td>{exp.amount}</td>
+                  <td>{exp.category}</td>
+                  <td>{exp.payment_method}</td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="5" align="center">
+                  No data found
+                </td>
               </tr>
-            ))}
+            )}
           </tbody>
         </table>
       </div>
@@ -110,6 +204,7 @@ const Expense = () => {
       {openModal && (
         <Modal
           heading="Add Expense"
+          onSubmit={submitForm}
           selectOptions={[
             {
               title: "Category",
@@ -117,6 +212,8 @@ const Expense = () => {
               id: "category",
               initialOption: "Choose a category",
               options: categories,
+              onChange: handleInputChange,
+              value: category,
             },
             {
               title: "Payment Method",
@@ -124,6 +221,8 @@ const Expense = () => {
               id: "payment_method",
               initialOption: "Choose a payment method",
               options: paymentMethods,
+              onChange: handleInputChange,
+              value: method,
             },
           ]}
           inputs={[
@@ -132,18 +231,24 @@ const Expense = () => {
               title: "Date",
               id: "date",
               type: "date",
+              value: date,
+              onChange: handleInputChange,
             },
             {
               name: "amount",
               title: "Amount",
               id: "amount",
               type: "text",
+              value: amount,
+              onChange: handleInputChange,
             },
             {
               name: "remarks",
               title: "Remarks",
               id: "remarks",
               type: "text",
+              value: remarks,
+              onChange: handleInputChange,
             },
           ]}
           buttonText="Add"
@@ -153,5 +258,4 @@ const Expense = () => {
     </div>
   );
 };
-
 export default Expense;
