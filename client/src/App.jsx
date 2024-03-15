@@ -11,6 +11,7 @@ import Chart from "./pages/Chart/Chart";
 import Budget from "./pages/Budget/Budget";
 import Refer from "./pages/Refer/Refer";
 import { useState } from "react";
+import Category from "./pages/Category/Category";
 
 function App() {
   const handleToggle = () => {
@@ -42,6 +43,10 @@ function App() {
         {
           path: "/",
           element: <Dashboard />,
+        },
+        {
+          path: "/category",
+          element: <Category />,
         },
         {
           path: "/expense",

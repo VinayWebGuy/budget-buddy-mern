@@ -1,42 +1,29 @@
 import React, { useEffect, useState } from "react";
-import "./Expense.scss";
+import "./Category.scss";
 import Modal from "../../components/Modal/Modal";
-import { BASE_URL, paymentMethods } from "../../data";
+import { BASE_URL } from "../../data";
 import { CSVLink } from "react-csv";
 import Loading from "../../components/Loading/Loading";
 import { MdDeleteOutline } from "react-icons/md";
 
-const Expense = () => {
+const Category = () => {
   const [openModal, setOpenModal] = useState(false);
   const [search, setSearch] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
-  const [expense, setExpense] = useState([]);
-  const [allCategory, setAllCategory] = useState([]);
+  const [category, setCategory] = useState([]);
   // Input change
-  const [amount, setAmount] = useState("");
-  const [date, setDate] = useState("");
-  const [method, setMethod] = useState("");
-  const [category, setCategory] = useState("");
-  const [remarks, setRemarks] = useState("");
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("");
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     switch (name) {
-      case "category":
-        setCategory(value);
+      case "name":
+        setName(value);
         break;
-      case "payment_method":
-        setMethod(value);
-        break;
-      case "date":
-        setDate(value);
-        break;
-      case "amount":
-        setAmount(value);
-        break;
-      case "remarks":
-        setRemarks(value);
+      case "status":
+        setStatus(value);
         break;
       default:
         break;
@@ -47,61 +34,36 @@ const Expense = () => {
     e.preventDefault();
     setLoading(true);
 
-    const income = {
-      amount,
-      date,
-      payment_method: method,
-      category,
-      remarks,
+    const category = {
+      name,
+      status,
     };
 
     try {
-      const response = await fetch(`${BASE_URL}/add-expense`, {
+      const response = await fetch(`${BASE_URL}/add-category`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(income),
+        body: JSON.stringify(category),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save income");
+        throw new Error("Failed to save category");
       }
 
       const data = await response.json();
-      console.log("Expense saved successfully:", data);
-      setExpense(data.expense);
+
+      console.log("Category saved successfully:", data);
+      setCategory(data.category);
       setLoading(false);
       setOpenModal(false);
-      setAmount("");
-      setDate("");
-      setCategory("");
-      setRemarks("");
+      setName("");
+      setStatus("");
     } catch (error) {
-      console.error("Error saving expense:", error.message);
+      console.error("Error saving category:", error.message);
     }
   };
-
-  useEffect(() => {
-    const fetchExpense = async () => {
-      try {
-        const response = await fetch(`${BASE_URL}/all-expense`, {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to fetch expense: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setExpense(data.expense);
-      } catch (error) {
-        console.error("Error fetching expese:", error.message);
-      }
-    };
-
-    fetchExpense();
-  }, []);
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -115,7 +77,7 @@ const Expense = () => {
         }
 
         const data = await response.json();
-        setAllCategory(data.category);
+        setCategory(data.category);
       } catch (error) {
         console.error("Error fetching category:", error.message);
       }
@@ -124,17 +86,17 @@ const Expense = () => {
     fetchCategory();
   }, []);
 
-  const deleteExpense = async (id) => {
+  const deleteCategory = async (id) => {
     setLoading(true);
     try {
-      const response = await fetch(`${BASE_URL}/delete-expense/${id}`, {
+      const response = await fetch(`${BASE_URL}/delete-category/${id}`, {
         method: "DELETE",
       });
       if (!response.ok) {
-        throw new Error(`Failed to delete expense: ${response.status}`);
+        throw new Error(`Failed to delete contact: ${response.status}`);
       }
-      setExpense((prevExpense) =>
-        prevExpense.filter((expense) => expense._id !== id)
+      setCategory((prevCategory) =>
+        prevCategory.filter((category) => category._id !== id)
       );
       setLoading(false);
     } catch (error) {
@@ -145,8 +107,9 @@ const Expense = () => {
   const closeModal = () => {
     setOpenModal(false);
   };
-  const filteredExpense = expense.filter((exp) =>
-    Object.values(exp).some(
+
+  const filteredCategory = category.filter((cat) =>
+    Object.values(cat).some(
       (value) =>
         typeof value === "string" &&
         value.toLowerCase().includes(search.toLowerCase())
@@ -154,13 +117,16 @@ const Expense = () => {
   );
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredExpense.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredCategory.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
-    <div className="box expense">
+    <div className="box category">
       {loading && <Loading />}
       <div className="table-header">
-        <h2 className="pageHeading">Expense</h2>
+        <h2 className="pageHeading">Category</h2>
         <div className="buttons">
           <CSVLink data={currentItems} className="btn outline">
             Download
@@ -185,7 +151,7 @@ const Expense = () => {
           <option value="25">25 item/page</option>
           <option value="40">40 item/page</option>
           <option value="50">50 item/page</option>
-          <option value={expense.length}>All</option>
+          <option value={category.length}>All</option>
         </select>
         <input
           type="text"
@@ -199,33 +165,29 @@ const Expense = () => {
           <thead>
             <tr>
               <th>ID</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Category</th>
-              <th>Method</th>
+              <th>Name</th>
+              <th>Status</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {currentItems.length > 0 ? (
-              currentItems.map((exp) => (
-                <tr key={exp._id}>
-                  <td>{exp._id}</td>
-                  <td>{new Date(exp.date).toISOString().split("T")[0]}</td>
-                  <td>{exp.amount}</td>
-                  <td>{exp.category}</td>
-                  <td>{exp.payment_method}</td>
+              currentItems.map((cat) => (
+                <tr key={cat._id}>
+                  <td>{cat._id}</td>
+                  <td>{cat.name}</td>
+                  <td>{cat.status}</td>
                   <td>
                     <MdDeleteOutline
                       className="delete-icon"
-                      onClick={() => deleteExpense(exp._id)}
+                      onClick={() => deleteCategory(cat._id)}
                     />
                   </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="6" align="center">
+                <td colSpan="4" align="center">
                   No data found
                 </td>
               </tr>
@@ -236,7 +198,7 @@ const Expense = () => {
       <div className="pagination">
         <ul className="pagination">
           {Array.from(
-            { length: Math.ceil(filteredExpense.length / itemsPerPage) },
+            { length: Math.ceil(filteredCategory.length / itemsPerPage) },
             (_, index) => (
               <li key={index}>
                 <button
@@ -252,59 +214,39 @@ const Expense = () => {
       </div>
       {openModal && (
         <Modal
-          heading="Add Expense"
-          onSubmit={submitForm}
+          heading="Add Category"
           selectOptions={[
             {
-              title: "Category",
-              name: "category",
-              id: "category",
-              initialOption: "Choose a category",
-              options: allCategory,
+              title: "Status",
+              name: "status",
+              id: "status",
+              initialOption: "Choose status",
+              options: [
+                { id: 1, name: "Active", value: 1 },
+                { id: 2, name: "Inactive", value: 0 },
+              ],
               onChange: handleInputChange,
-              value: category,
-            },
-            {
-              title: "Payment Method",
-              name: "payment_method",
-              id: "payment_method",
-              initialOption: "Choose a payment method",
-              options: paymentMethods,
-              onChange: handleInputChange,
-              value: method,
+              value: status,
+              required: true,
             },
           ]}
           inputs={[
             {
-              name: "date",
-              title: "Date",
-              id: "date",
-              type: "date",
-              value: date,
-              onChange: handleInputChange,
-            },
-            {
-              name: "amount",
-              title: "Amount",
-              id: "amount",
+              name: "name",
+              title: "Name",
+              id: "name",
               type: "text",
-              value: amount,
+              value: name,
               onChange: handleInputChange,
-            },
-            {
-              name: "remarks",
-              title: "Remarks",
-              id: "remarks",
-              type: "text",
-              value: remarks,
-              onChange: handleInputChange,
+              required: true,
             },
           ]}
           buttonText="Add"
           closeModal={closeModal}
+          onSubmit={submitForm}
         />
       )}
     </div>
   );
 };
-export default Expense;
+export default Category;

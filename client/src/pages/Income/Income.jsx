@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./Income.scss";
 import Modal from "../../components/Modal/Modal";
-import { BASE_URL, categories, paymentMethods } from "../../data";
+import { BASE_URL, paymentMethods } from "../../data";
 import { CSVLink } from "react-csv";
 import Loading from "../../components/Loading/Loading";
+import { MdDeleteOutline } from "react-icons/md";
 
 const Income = () => {
   const [openModal, setOpenModal] = useState(false);
@@ -12,6 +13,7 @@ const Income = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [loading, setLoading] = useState(false);
   const [income, setIncome] = useState([]);
+  const [allCategory, setAllCategory] = useState([]);
   // Input change
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
@@ -69,13 +71,13 @@ const Income = () => {
       const data = await response.json();
 
       console.log("Income saved successfully:", data);
+      setIncome(data.income);
       setLoading(false);
       setOpenModal(false);
       setAmount("");
       setDate("");
       setCategory("");
       setRemarks("");
-      fetchIncome();
     } catch (error) {
       console.error("Error saving income:", error.message);
     }
@@ -101,6 +103,44 @@ const Income = () => {
 
     fetchIncome();
   }, []);
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const response = await fetch(`${BASE_URL}/all-category`, {
+          method: "GET",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch category: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setAllCategory(data.category);
+      } catch (error) {
+        console.error("Error fetching category:", error.message);
+      }
+    };
+
+    fetchCategory();
+  }, []);
+
+  const deleteIncome = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${BASE_URL}/delete-income/${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete income: ${response.status}`);
+      }
+      setIncome((prevIncome) =>
+        prevIncome.filter((income) => income._id !== id)
+      );
+      setLoading(false);
+    } catch (error) {
+      console.log("Error" + error);
+    }
+  };
 
   const closeModal = () => {
     setOpenModal(false);
@@ -163,6 +203,7 @@ const Income = () => {
               <th>Amount</th>
               <th>Category</th>
               <th>Remarks</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -174,11 +215,17 @@ const Income = () => {
                   <td>{inc.amount}</td>
                   <td>{inc.category}</td>
                   <td>{inc.payment_method}</td>
+                  <td>
+                    <MdDeleteOutline
+                      className="delete-icon"
+                      onClick={() => deleteIncome(inc._id)}
+                    />
+                  </td>
                 </tr>
               ))
             ) : (
               <tr>
-                <td colSpan="5" align="center">
+                <td colSpan="6" align="center">
                   No data found
                 </td>
               </tr>
@@ -212,7 +259,7 @@ const Income = () => {
               name: "category",
               id: "category",
               initialOption: "Choose a category",
-              options: categories,
+              options: allCategory,
               onChange: handleInputChange,
               value: category,
               required: true,

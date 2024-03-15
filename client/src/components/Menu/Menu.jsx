@@ -1,7 +1,7 @@
 import React from "react";
 import "./Menu.scss";
 import { Link, useLocation } from "react-router-dom";
-import { menuItems } from "./../../data";
+import { currentVersion, menuItems } from "./../../data";
 
 const Menu = () => {
   const location = useLocation();
@@ -22,7 +22,7 @@ const Menu = () => {
       ))}
       <span className="listItem version">
         <img src="/version.svg" alt="" />
-        <span>version 1.01</span>
+        <span>version {currentVersion}</span>
       </span>
     </div>
   );
